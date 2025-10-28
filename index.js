@@ -19,9 +19,38 @@ app.get("/", function (req, res) {
 });
 
 
-// your first API endpoint... 
-app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
+// API endpoint - fecha actual si no se proporciona parámetro
+app.get('/api', (req, res) => {
+  const now = new Date();
+  res.json({
+    unix: now.getTime(),
+    utc: now.toUTCString()
+  });
+});
+
+// API endpoint - procesar fecha proporcionada
+app.get('/api/:date', (req, res) => {
+  let dateParam = req.params.date;
+  let date;
+
+  // Verificar si es un timestamp Unix (solo números)
+  if (/^\d+$/.test(dateParam)) {
+    // Convertir string a número y crear fecha
+    date = new Date(parseInt(dateParam));
+  } else {
+    // Intentar parsear como fecha string
+    date = new Date(dateParam);
+  }
+
+  // Verificar si la fecha es válida
+  if (date.toString() === 'Invalid Date') {
+    res.json({ error: 'Invalid Date' });
+  } else {
+    res.json({
+      unix: date.getTime(),
+      utc: date.toUTCString()
+    });
+  }
 });
 
 
